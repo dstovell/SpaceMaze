@@ -14,21 +14,22 @@ public class PipeMazeLink
 {
 	public PipeMazeLink(GameObject anchorObject, GameObject pipePrefab, GameObject junctionPrefab)
 	{
-		Quaternion rotation = Quaternion.identity; //Quaternion.LookRotation(anchorObject.transform.forward, anchorObject.transform.up);
+		Quaternion rotation = Quaternion.LookRotation(anchorObject.transform.forward, anchorObject.transform.up);
 
-		this.positon = this.CalculateAnchorPlacement(anchorObject, pipePrefab);
+		this.positon = this.CalculateAnchorPlacement(anchorObject, pipePrefab, rotation);
 		this.pipe = GameObject.Instantiate(pipePrefab, this.positon, rotation) as GameObject;
 		this.pipeComponent = this.pipe.GetComponentInChildren<PipeMazePipeComponent>();
 		this.pipe.name = anchorObject.name + "_pipe";
 
-		Vector3 junctionPos = this.CalculateAnchorPlacement(this.pipeComponent.inLink, junctionPrefab);
-		//this.junction = GameObject.Instantiate(junctionPrefab, junctionPos, rotation) as GameObject;
-		//this.junctionComponent = this.junction.GetComponentInChildren<PipeMazeJunctionComponent>();
+		Vector3 junctionPos = this.CalculateAnchorPlacement(this.pipeComponent.forwardLink, junctionPrefab, rotation);
+		this.junction = GameObject.Instantiate(junctionPrefab, junctionPos, rotation) as GameObject;
+		this.junctionComponent = this.junction.GetComponentInChildren<PipeMazeJunctionComponent>();
 	}
 
-	public Vector3 CalculateAnchorPlacement(GameObject anchorObject, GameObject prefab)
+	public Vector3 CalculateAnchorPlacement(GameObject anchorObject, GameObject prefab, Quaternion rotation)
 	{
 		Vector3 pos = Vector3.zero;
+		prefab.transform.rotation = rotation;
 		PipeMazeComponent comp = prefab.GetComponentInChildren<PipeMazeComponent>();
 		if (comp != null)
 		{
