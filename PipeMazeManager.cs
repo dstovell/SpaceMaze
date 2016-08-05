@@ -70,7 +70,7 @@ public class PipeMazeManager : MonoBehaviour
     		return null;
     	}
 
-		int randomIndex = Random.Range(0, junctionCount-1);
+		int randomIndex = Random.Range(0, junctionCount);
 
     	return junctionPrefabs[randomIndex];
     }
@@ -83,7 +83,7 @@ public class PipeMazeManager : MonoBehaviour
     		return null;
     	}
 
-		int randomIndex = Random.Range(0, pipeCount-1);
+		int randomIndex = Random.Range(0, pipeCount);
 
 		return pipePrefabs[randomIndex];
     }
