@@ -23,10 +23,13 @@ public class PipeGenerator : MonoBehaviour
 
 	void OnGUI () 
 	{
-		GUILayout.BeginArea(new Rect(10, 10, 200, 200));
-		if (GUILayout.Button("Generate Pipe Prefab"))
+		GUILayout.BeginArea(new Rect(10, 10, 200, 600));
+		for (int i=0; i<panelPrefabs.Length; i++)
 		{
-			GeneratePipe();
+			if (GUILayout.Button("Generate Pipe All " + panelPrefabs[i].name))
+			{
+				GeneratePipe(i);
+			}
 		}
         GUILayout.EndArea();
 	}
@@ -44,7 +47,7 @@ public class PipeGenerator : MonoBehaviour
     	return panelPrefabs[randomIndex];
     }
 
-    public void GeneratePipe()
+    public void GeneratePipe(int prefabIndex)
     {
 		GameObject pipePrefab = new GameObject("PipePrefab");
 		pipePrefab.transform.position = Vector3.zero;
@@ -53,7 +56,7 @@ public class PipeGenerator : MonoBehaviour
 		pipe.transform.position = Vector3.zero;
 		pipe.transform.parent = pipePrefab.transform;
 
-		GameObject panelPrefab = this.PickRandomPanel();
+		GameObject panelPrefab = this.panelPrefabs[prefabIndex];
 		float panelSize = 1.5f;
 
 		int circularSegmentCount = 8;

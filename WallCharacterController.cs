@@ -22,6 +22,7 @@ public class WallCharacterController : MonoBehaviour
 	private float jumpSpeed = 5; // vertical jump initial speed
 	private float jumpRange = 10; // range to detect target wall
 	public Vector3 surfaceNormal; // current surface normal
+	public string surfaceName = "None";
 	public Vector3 myNormal; // character normal
 
 	public float lastHitDistance; // distance from character position to ground
@@ -98,6 +99,7 @@ public class WallCharacterController : MonoBehaviour
 			lastHitDistance = hit.distance;
 			isGrounded = hit.distance <= (distGround + deltaGround);
 			surfaceNormal = hit.normal;
+			surfaceName = hit.collider.gameObject.name;
 		}
 		else 
 		{
@@ -235,4 +237,11 @@ public class WallCharacterController : MonoBehaviour
         if (act != null)
             act();
     }
+
+	void OnGUI () 
+	{
+		GUILayout.BeginArea(new Rect(10, 10, 200, 600));
+		GUILayout.Box("Surface: " + surfaceName);
+        GUILayout.EndArea();
+	}
 }
