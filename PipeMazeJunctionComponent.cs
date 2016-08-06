@@ -29,7 +29,7 @@ public class PipeMazeJunctionComponent : PipeMazeComponent
 
 	public void Extend(int depth = 1)
     {
-		Debug.LogError("PipeMazeJunctionComponent Extend " + depth);
+		//Debug.LogError("PipeMazeJunctionComponent Extend " + depth);
 
     	if (this.goal != null)
     	{
@@ -61,7 +61,13 @@ public class PipeMazeJunctionComponent : PipeMazeComponent
 
 	void OnTriggerEnter(Collider other)
 	{
-		Debug.Log("PipeMazeJunctionComponent OnTriggerEnter " + other.name);
+		//Debug.Log("PipeMazeJunctionComponent OnTriggerEnter " + other.name);
+
+		PipeMazeActorComponent actor = other.gameObject.GetComponent<PipeMazeActorComponent>();
+		if (actor != null)
+		{
+			actor.OnEnterJunction(this);
+		}
 
 		if (this.goal != null)
 		{
@@ -74,6 +80,15 @@ public class PipeMazeJunctionComponent : PipeMazeComponent
 		else
 		{
 			Extend(2);
+		}
+	}
+
+	void OnTriggerExit(Collider other)
+	{
+		PipeMazeActorComponent actor = other.gameObject.GetComponent<PipeMazeActorComponent>();
+		if (actor != null)
+		{
+			actor.OnExitJunction(this);
 		}
 	}
 }

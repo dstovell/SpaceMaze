@@ -4,6 +4,7 @@ using System.Collections;
 public class PipeGenerator : MonoBehaviour
 {
 	public GameObject [] panelPrefabs;
+	public GameObject [] panelEdgePrefabs;
 
 	public void Awake()
     {
@@ -66,6 +67,7 @@ public class PipeGenerator : MonoBehaviour
 		float deltaAngle = 2.0f*Mathf.PI / (float)circularSegmentCount;
 		for (int i=0; i<lengthSegmentCount; i++)
 		{
+			bool addEdge = ( (i == 0) || (i == (lengthSegmentCount-1)) );
 			for (float angle=deltaAngle; angle<(2*Mathf.PI); angle+=deltaAngle)
 			{
 				float x = pipeRadius * Mathf.Cos(angle);
@@ -73,9 +75,26 @@ public class PipeGenerator : MonoBehaviour
 				float z = panelSize * (float)i;
 				Vector3 position = new Vector3(x, y, z);
 				Quaternion rotation = Quaternion.AngleAxis(Mathf.Rad2Deg * angle + 90, Vector3.forward);
-				GameObject panel = GameObject.Instantiate(panelPrefab, position, rotation) as GameObject;
 
+				GameObject panel = GameObject.Instantiate(panelPrefab, position, rotation) as GameObject;
 				panel.transform.parent = pipe.transform;
+
+				if (addEdge)
+				{
+					float offsetScaler = 0.5f*panelSize;
+					if (i == 0) 
+					{
+						offsetScaler *= -1.0f;
+					}
+
+					Vector3 edgePosition = position + offsetScaler*Vector3.forward;
+					GameObject panelEdge = GameObject.Instantiate(panelEdgePrefabs[0], edgePosition, rotation) as GameObject;
+					panelEdge.transform.parent = pipe.transform;
+					if (i == 0) 
+					{
+						panelEdge.transform.Rotate(0f, 180f, 0f);
+					}
+				}
 			}
 		}
 

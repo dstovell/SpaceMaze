@@ -26,6 +26,8 @@ public class PipeMaze
 
 public class PipeMazeManager : MonoBehaviour
 {
+	public GameObject [] startPointPrefabs;
+	public GameObject [] endPointPrefabs;
 	public GameObject [] junctionPrefabs;
 	public GameObject [] pipePrefabs;
 

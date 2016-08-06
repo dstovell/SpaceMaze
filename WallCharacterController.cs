@@ -32,7 +32,7 @@ public class WallCharacterController : MonoBehaviour
 
 	private bool crouching = false;
 
-	enum MoveState
+	public enum MoveState
 	{
 		Idle,
 		Walk,
@@ -59,7 +59,7 @@ public class WallCharacterController : MonoBehaviour
 	private void FixedUpdate()
 	{
 		// apply constant weight force according to character normal:
-		rb.AddForce(-gravity*rb.mass*myNormal);
+		this.rb.AddForce(-gravity*rb.mass*myNormal);
  	}
  
 	private void Update()
@@ -119,6 +119,11 @@ public class WallCharacterController : MonoBehaviour
      	transform.Translate(0, 0, Input.GetAxis("Vertical")*moveSpeed*Time.deltaTime); 
 	}
 
+	public void SetMoveState(MoveState state)
+	{
+		this.moveState = state;
+	}
+
 	private void Jump()
 	{
 		Debug.Log("Jump");
@@ -127,20 +132,11 @@ public class WallCharacterController : MonoBehaviour
 		RaycastHit hit;
 
 		// jump pressed:
-		/*ray = new Ray(myTransform.position, myTransform.forward);
-		if (Physics.Raycast(ray, out hit, jumpRange))
-		{
-			animator.SetBool("Jump", true);
-			StartCoroutine(DisableBool("Jump", .1f));
-
-			// wall ahead?
-			Debug.Log("Jump to wall");
-			JumpToWall(hit.point, hit.normal); // yes: jump to the wall
-		}
-		else*/ if (isGrounded)
+		if (isGrounded)
 		{ 
 			animator.SetBool("Jump", true);
 			StartCoroutine(DisableBool("Jump", .1f));
+
 			// no: if grounded, jump up
 			Debug.Log("Jump in air");
 			//rb.velocity += jumpSpeed * myNormal;
@@ -155,7 +151,7 @@ public class WallCharacterController : MonoBehaviour
 			SetCrouch(false);
 			animator.SetBool("Run", false);
 			animator.SetBool("Walk", true);
-			moveState = MoveState.Walk;
+			this.SetMoveState(MoveState.Walk);
 			moveSpeed = 0.9f;
 		}
 
@@ -170,7 +166,7 @@ public class WallCharacterController : MonoBehaviour
 			SetCrouch(false);
 			animator.SetBool("Walk", false);
 			animator.SetBool("Run", true);
-			moveState = MoveState.Run;
+			this.SetMoveState(MoveState.Run);
 			moveSpeed = 5;
 		}
 		//rb.MovePosition(transform.position + transform.forward*moveSpeed*Time.deltaTime);
@@ -183,9 +179,9 @@ public class WallCharacterController : MonoBehaviour
 			//Debug.Log("Stop");
 			animator.SetBool("Walk", false);
 	        animator.SetBool("Run", false);
-	        moveState = MoveState.Idle;
+			this.SetMoveState(MoveState.Idle);
 
-			rb.velocity = Vector3.zero;
+			this.rb.velocity = Vector3.zero;
 	    }
 	}
 
@@ -229,6 +225,13 @@ public class WallCharacterController : MonoBehaviour
 		jumping = false; // jumping to wall finished
 	}
 
+	IEnumerator EnableBool( string key, float time, System.Action act=null )
+    {
+        yield return new WaitForSeconds(time);        
+       	animator.SetBool(key, true);
+        if (act != null)
+            act();
+    }
 
 	IEnumerator DisableBool( string key, float time, System.Action act=null )
     {
@@ -242,6 +245,7 @@ public class WallCharacterController : MonoBehaviour
 	{
 		GUILayout.BeginArea(new Rect(10, 10, 200, 600));
 		GUILayout.Box("Surface: " + surfaceName);
+		GUILayout.Box("Speed: " + this.rb.velocity.magnitude);
         GUILayout.EndArea();
 	}
 }
