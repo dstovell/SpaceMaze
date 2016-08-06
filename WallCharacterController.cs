@@ -32,6 +32,8 @@ public class WallCharacterController : MonoBehaviour
 
 	private bool crouching = false;
 
+	private bool inputRun = false;
+
 	public enum MoveState
 	{
 		Idle,
@@ -73,12 +75,11 @@ public class WallCharacterController : MonoBehaviour
 		if (Input.GetKeyDown(KeyCode.Space)) Jump();
 		if (Input.GetKeyDown(KeyCode.LeftControl)) ToggleCrouch();
 
-
 		if (Input.GetKey(KeyCode.Q)) 
 		{
 			Walk();
 		}
-		else if (Input.GetKey(KeyCode.W))
+		else if (Input.GetKey(KeyCode.W) || this.inputRun)
 		{
 			Run();
 		}
@@ -116,7 +117,8 @@ public class WallCharacterController : MonoBehaviour
 		myTransform.rotation = Quaternion.Lerp(myTransform.rotation, targetRot, lerpSpeed*Time.deltaTime);
 
 		// move the character forth/back with Vertical axis:
-     	transform.Translate(0, 0, Input.GetAxis("Vertical")*moveSpeed*Time.deltaTime); 
+		float axis = this.inputRun ? 1f : Input.GetAxis("Vertical");
+		transform.Translate(0, 0, axis*moveSpeed*Time.deltaTime); 
 	}
 
 	public void SetMoveState(MoveState state)
@@ -246,6 +248,21 @@ public class WallCharacterController : MonoBehaviour
 		GUILayout.BeginArea(new Rect(10, 10, 200, 600));
 		GUILayout.Box("Surface: " + surfaceName);
 		GUILayout.Box("Speed: " + this.rb.velocity.magnitude);
+
+		if (!this.inputRun)
+		{
+			if (GUILayout.Button("Run"))
+			{
+				this.inputRun = true;
+			}
+		}
+		else
+		{
+			if (GUILayout.Button("Stop"))
+			{
+				this.inputRun = false;
+			}
+		}
         GUILayout.EndArea();
 	}
 }
