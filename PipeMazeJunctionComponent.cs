@@ -79,7 +79,7 @@ public class PipeMazeJunctionComponent : PipeMazeComponent
 		}
 		else
 		{
-			Extend(2);
+			Extend(1);
 		}
 	}
 
