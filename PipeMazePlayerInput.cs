@@ -1,5 +1,9 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
+using System.Collections.Generic;
+using TouchScript;
+using TouchScript.Gestures;
 
 public class PipeMazePlayerInput : MonoBehaviour 
 {
@@ -20,9 +24,16 @@ public class PipeMazePlayerInput : MonoBehaviour
 
 	public PipeMazePlayerMachine Player;
 
+	public PipeMazeMagnetic MagneticBoots;
+
+	void Awake() 
+	{
+	}
+
 	// Use this for initialization
 	void Start() 
 	{
+		Screen.orientation = ScreenOrientation.Portrait;
         Current = new PlayerInput();
 		Player = gameObject.GetComponent<PipeMazePlayerMachine>();
 	}
@@ -30,64 +41,107 @@ public class PipeMazePlayerInput : MonoBehaviour
 	// Update is called once per frame
 	void Update() 
 	{
+		this.Current.Dive = false;
+		this.Current.Jump = false;
 	}
 
+	//private int lastChargeDir
 	void OnGUI () 
 	{
-		GUILayout.BeginArea(new Rect(10, 10, 200, 600));
+		GUILayout.BeginArea(new Rect(10, 10, 400, 600));
 
-
-		GUILayout.Box("State: " + Player.currentState);
-		//GUILayout.Box("GroundDist: " + Player.controller.currentGround.Distance);
-		GUILayout.Box("Speed: " + Player.rb.velocity.magnitude);
-
-		bool isMoving = this.Current.Run || this.Current.Walk;
-
-		if (!isMoving)
+		if (this.Player != null)
 		{
-			if (GUILayout.Button("Run"))
-			{
-				this.Current.Run = true;
-			}
-			if (GUILayout.Button("Walk"))
-			{
-				this.Current.Walk = true;
-			}
-		}
-		else
-		{
-			if (GUILayout.Button("Stop"))
-			{
-				this.Current.Run = false;
-				this.Current.Walk = false;
-			}
+			GUILayout.Box("State: " + this.Player.currentState);
+			//GUILayout.Box("GroundDist: " + this.Player.controller.currentGround.Distance);
+			//GUILayout.Box("Speed: " + this.Player.rb.velocity.magnitude);
 		}
 
-		this.Current.Left = false;
-		if (GUILayout.Button("Left"))
+		if (this.MagneticBoots != null)
 		{
-			this.Current.Left = true;
+			Vector3 chargeDir = this.MagneticBoots.CalculateLocalChargeForce();
+			GUILayout.Box("Charge: " + this.MagneticBoots.charge.ToString());
+			GUILayout.Box("NearbyMagnetics: " + ((this.MagneticBoots.nearbyMagnetics.Count > 0) ? (this.MagneticBoots.nearbyMagnetics[0].name + "(" + this.MagneticBoots.nearbyMagnetics[0].charge.ToString() + ")") : "none"));
+			GUILayout.Box("Charge Dir: (" + chargeDir.x.ToString("#.00") + "," + chargeDir.y.ToString("#.00") + "," + chargeDir.z.ToString("#.00") +")");
 		}
-
-		this.Current.Right = false;
-		if (GUILayout.Button("Right"))
-		{
-			this.Current.Right = true;
-		}
-
-		this.Current.Jump = false;
-		if (GUILayout.Button("Jump"))
-		{
-			this.Current.Jump = true;
-		}
-
-		this.Current.Dive = false;
-		if (GUILayout.Button("Dive"))
-		{
-			this.Current.Dive = true;
-		}
-
 
         GUILayout.EndArea();
+	}
+
+	private void OnEnable()
+    {
+       	FlickGesture [] flicks = Camera.main.GetComponents<FlickGesture>();
+		for (int i=0; i<flicks.Length; i++)
+		{
+			flicks[i].Flicked += this.FlickedHandler;
+		}
+
+		TapGesture [] taps = Camera.main.GetComponents<TapGesture>();
+		for (int i=0; i<taps.Length; i++)
+		{
+			taps[i].Tapped += this.TapHandler;
+		}
+    }
+
+    private void OnDisable()
+    {
+       	FlickGesture [] flicks = Camera.main.GetComponents<FlickGesture>();
+		for (int i=0; i<flicks.Length; i++)
+		{
+			flicks[i].Flicked -= this.FlickedHandler;
+		}
+
+		TapGesture [] taps = Camera.main.GetComponents<TapGesture>();
+		for (int i=0; i<taps.Length; i++)
+		{
+			taps[i].Tapped -= this.TapHandler;
+		}
+    }
+
+	private void FlickedHandler(object sender, EventArgs e)
+	{
+		Debug.LogError("FlickedHandler");
+		FlickGesture gesture = sender as FlickGesture;
+		if (gesture != null)
+		{
+			//Debug.LogError("FlickedHandler got FlickGesture Direction=" + gesture.Direction.ToString() + " ScreenFlickVector=" + gesture.ScreenFlickVector.x + "," + gesture.ScreenFlickVector.y);
+			if (Mathf.Abs(gesture.ScreenFlickVector.x) >= Mathf.Abs(gesture.ScreenFlickVector.y))
+			{
+				if (gesture.ScreenFlickVector.x > 0)
+				{
+					//Right
+					Debug.LogError("Right");
+				}
+				else
+				{
+					//Left
+					Debug.LogError("Left");
+				}
+			}
+			else
+			{
+				if (gesture.ScreenFlickVector.y > 0)
+				{
+					//Up
+					Debug.LogError("Jump");
+					this.Current.Jump = true;
+				}
+				else
+				{
+					//Down
+					Debug.LogError("Dive");
+					this.Current.Dive = true;
+				}
+			}
+		}
+	}
+
+	private void TapHandler(object sender, EventArgs e)
+	{
+		TapGesture gesture = sender as TapGesture;
+		if (gesture != null)
+		{
+			this.Current.Run = !this.Current.Run;
+		}
 	}
 }

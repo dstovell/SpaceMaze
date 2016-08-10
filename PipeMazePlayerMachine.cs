@@ -286,8 +286,8 @@ public class PipeMazePlayerMachine : SuperStateMachine
 
     void Jump_SuperUpdate()
     {
-		//if (!this.Animator.GetCurrentAnimatorStateInfo(0).IsName("Jump"))
-		if (Animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && !Animator.IsInTransition(0))
+		if (!this.Animator.GetCurrentAnimatorStateInfo(0).IsName("Jump"))
+		//if (Animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && !Animator.IsInTransition(0))
 		{
 			currentState = PlayerStates.Idle;
 		}
@@ -307,8 +307,8 @@ public class PipeMazePlayerMachine : SuperStateMachine
 
 	void Dive_SuperUpdate()
     {
-		//if (!this.Animator.GetCurrentAnimatorStateInfo(0).IsName("Dive"))
-		if (Animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && !Animator.IsInTransition(0))
+		if (!this.Animator.GetCurrentAnimatorStateInfo(0).IsName("Dive"))
+		//if (Animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && !Animator.IsInTransition(0))
 		{
 			currentState = PlayerStates.Idle;
 		}
