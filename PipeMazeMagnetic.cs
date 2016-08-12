@@ -19,6 +19,12 @@ public class PipeMazeMagnetic : MonoBehaviour
 
 	public Rigidbody rigid;
 	public Collider rigidCollider;
+	public Vector3 staticLocalMagneticDir = Vector3.zero;
+	public PipeMazePlayerMachine player;
+
+	private float lerpSpeed = 0.5f; // smoothing speed
+
+	public bool IsSurfaceMagnetic() { return (this.staticLocalMagneticDir != Vector3.zero); }
 
 	public Charge charge
 	{
@@ -82,6 +88,16 @@ public class PipeMazeMagnetic : MonoBehaviour
 
 	public void Update() 
 	{
+		if (this.player != null)
+		{
+			Vector3 force = CalculateLocalChargeForce();
+			if (force != Vector3.zero)
+			{
+				Vector3 desiredUp = (-1*force).normalized;
+				Quaternion targetRotation = Quaternion.FromToRotation(Vector3.forward, Vector3.up) * Quaternion.LookRotation(this.player.transform.forward, desiredUp);
+				this.player.transform.rotation = Quaternion.Lerp(this.player.transform.rotation, targetRotation, Time.deltaTime * lerpSpeed);
+			}
+		}
 	}
 
 	public void FixedUpdate()
@@ -98,8 +114,14 @@ public class PipeMazeMagnetic : MonoBehaviour
 
 	public Vector3 GetChargeForce(PipeMazeMagnetic other)
 	{
-		//TODO: Make the force ramp up as the distance shortens
 		Vector3 forceDirection = (other.transform.position - this.transform.position).normalized;
+		if (this.IsSurfaceMagnetic())
+		{
+			forceDirection = other.transform.TransformDirection(other.staticLocalMagneticDir);
+		}
+
+		//TODO: Make the force ramp up as the distance shortens
+
 		float forceMultiplier = this.GetChargePolarityMultiplier(other) * this.chargeStrength;
 		return forceMultiplier*forceDirection;
 	}
@@ -139,9 +161,25 @@ public class PipeMazeMagnetic : MonoBehaviour
 			return Vector3.zero;
 		}
 
+		if ((this.player != null) && this.player.MaintainingGround())
+		{
+			return -1*this.transform.up;
+			//return Vector3.zero;
+		}
+
 		Vector3 force = Vector3.zero;
+		bool hasSurfaceMagnetic = false;
 		for (int i=0; i<this.nearbyMagnetics.Count; i++)
 		{
+			if (this.nearbyMagnetics[i].IsSurfaceMagnetic())
+			{
+				if (hasSurfaceMagnetic)
+				{
+					//continue;
+				}
+				hasSurfaceMagnetic = true;
+			}
+
 			force += this.GetChargeForce(this.nearbyMagnetics[i]);
 		}
 

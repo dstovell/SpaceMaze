@@ -76,14 +76,14 @@ public class PipeMazePlayerMachine : SuperStateMachine
         AnimatedMesh.rotation = Quaternion.LookRotation(lookDirection, controller.up);
     }
 
-    private bool AcquiringGround()
+    public bool AcquiringGround()
     {
         return controller.currentGround.IsGrounded(false, 0.01f);
     }
 
-    private bool MaintainingGround()
+	public bool MaintainingGround()
     {
-        return controller.currentGround.IsGrounded(true, 0.5f);
+        return controller.currentGround.IsGrounded(true, 0.2f);
     }
 
     public void RotateGravity(Vector3 up)

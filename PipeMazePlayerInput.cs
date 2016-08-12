@@ -63,6 +63,7 @@ public class PipeMazePlayerInput : MonoBehaviour
 			GUILayout.Box("Charge: " + this.MagneticBoots.charge.ToString());
 			GUILayout.Box("NearbyMagnetics: " + ((this.MagneticBoots.nearbyMagnetics.Count > 0) ? (this.MagneticBoots.nearbyMagnetics[0].name + "(" + this.MagneticBoots.nearbyMagnetics[0].charge.ToString() + ")") : "none"));
 			GUILayout.Box("Charge Dir: (" + chargeDir.x.ToString("#.00") + "," + chargeDir.y.ToString("#.00") + "," + chargeDir.z.ToString("#.00") +")");
+			GUILayout.Box("AG:" + this.Player.AcquiringGround() + " MG:" +  this.Player.MaintainingGround());
 		}
 
         GUILayout.EndArea();

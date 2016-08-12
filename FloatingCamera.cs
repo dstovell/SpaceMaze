@@ -2,7 +2,7 @@
 using System.Collections;
 using KGF;
 
-public class CharacterCamera : MonoBehaviour 
+public class FloatingCamera : MonoBehaviour 
 {
 	public KGFOrbitCamSettings settings;
 	public PipeMazePlayerMachine player;
@@ -17,7 +17,7 @@ public class CharacterCamera : MonoBehaviour
 	// Update is called once per frame
 	void Update () 
 	{
-		if (player.MaintainingGround())
+		if (!player.MaintainingGround())
 		{
 			settings.Apply();
 		}
